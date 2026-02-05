@@ -454,7 +454,7 @@ class Jeu:
             self.game_over("La folie vous a consumé...")
         
         # Temps
-        self.temps += 1
+        self.temps += 1.5
         heures = (self.temps // 3600) % 24
         
         # Victoire
@@ -584,3 +584,4 @@ if __name__ == "__main__":
     jeu = Jeu()
 
     jeu.run()
+
