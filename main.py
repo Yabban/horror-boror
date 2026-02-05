@@ -1,7 +1,8 @@
 import pygame
 import random
 import math
-
+from sys import exit
+from PIL import Image
 # Initialisation de Pygame
 pygame.init()
 
@@ -581,4 +582,5 @@ class Jeu:
 
 if __name__ == "__main__":
     jeu = Jeu()
+
     jeu.run()
