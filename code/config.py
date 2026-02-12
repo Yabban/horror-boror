@@ -1,0 +1,39 @@
+"""Configuration du jeu - Constantes et paramètres"""
+
+# Dimensions de la fenêtre
+LARGEUR = 1200
+HAUTEUR = 800
+FPS = 60
+
+# Couleurs
+NOIR = (0, 0, 0)
+BLANC = (255, 255, 255)
+ROUGE = (255, 0, 0)
+VERT = (0, 255, 0)
+BLEU = (0, 100, 255)
+JAUNE = (255, 255, 0)
+GRIS = (50, 50, 50)
+GRIS_CLAIR = (150, 150, 150)
+ORANGE = (255, 165, 0)
+VIOLET = (200, 0, 255)
+
+# Paramètres du joueur
+JOUEUR_LARGEUR = 30
+JOUEUR_HAUTEUR = 30
+JOUEUR_VITESSE = 4
+JOUEUR_SANTE_MAX = 100
+JOUEUR_PARANOIA_AUGMENTATION = 0.01
+
+# Paramètres des monstres
+MONSTRE_LARGEUR = 35
+MONSTRE_HAUTEUR = 35
+MONSTRE_VITESSE = 2
+
+# Paramètres du monde
+LARGEUR_MONDE = 2000
+HAUTEUR_MONDE = 2000
+
+# Paramètres de jeu
+HEURE_DEBUT = 0
+HEURE_VICTOIRE_MIN = 6
+HEURE_VICTOIRE_MAX = 22
