@@ -22,10 +22,10 @@ class WorldGenerator:
         
         # Murs intérieurs aléatoires
         for _ in range(30):
-            x = random.randint(100, self.largeur - 200)
-            y = random.randint(100, self.hauteur - 200)
-            largeur = random.randint(50, 200)
-            hauteur = random.randint(50, 200)
+            x = (100, self.largeur - 200)
+            y = (100, self.hauteur - 200)
+            largeur = (50, 200)
+            hauteur = (50, 200)
             murs.append(pygame.Rect(x, y, largeur, hauteur))
         
         return murs
