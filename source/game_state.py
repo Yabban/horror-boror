@@ -1,52 +1,113 @@
-# Projet : Survie jusqu'à l'aube
-# Auteurs : [Prénoms Noms]
-"""État global du jeu"""
+"""Logique du jeu : déplacements, quêtes, monstres, paranoïa"""
 
-from entities import Joueur, Quete
-from world import WorldGenerator, Camera
+import pygame
 from config import *
 
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Menu Principal")
+font = pygame.font.Font(None, 74)
 
-class GameState:
-    def __init__(self):
-        self.temps    = 0
-        self.messages = []
-        self.quete_actuelle   = 0
-        self.monstres_actives = False
+play_rect = pygame.Rect(300, 200, 200, 100)
 
-        self.joueur = Joueur(100, 100)
-        self._generer_monde()
-        self.quetes = [
-            Quete("Trouver une sortie",    "Cherchez une clé pour ouvrir la porte"),
-            Quete("Rétablir l'électricité","Trouvez un fusible"),
-            Quete("Survivre jusqu'à l'aube","Restez en vie jusqu'à 6h00"),
-        ]
-        self.camera = Camera(LARGEUR_MONDE, HAUTEUR_MONDE)
+running = True
+while running:
+    screen.fill((0, 0, 0))
+    
+    text_play = font.render("Jouer", True, (255, 255, 255))
+    
+    screen.blit(text_play, (play_rect.x + 45, play_rect.y + 20))
+    
+    pygame.draw.rect(screen, (0, 128, 255), play_rect, 2)
 
-    def _generer_monde(self):
-        g = WorldGenerator(LARGEUR_MONDE, HAUTEUR_MONDE)
-        self.murs     = g.generer_murs()
-        self.objets   = g.generer_objets()
-        self.boites   = g.generer_boites()
-        self.monstres = g.generer_monstres()
-        self.panneaux_electricite = g.generer_panneaux()
+    pygame.display.flip()
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if play_rect.collidepoint(event.pos):
+                running = False
+                print("Jouer")  
 
-    def ajouter_message(self, texte, duree=180):
-        self.messages.append((texte, duree))
+class GameLogic:
+    def __init__(self, game_state):
+        self.state = game_state
 
-    def mettre_a_jour_camera(self):
-        self.camera.centrer_sur(self.joueur)
+    def gerer_entrees(self):
+        keys = pygame.key.get_pressed()
+        dx = dy = 0
+        if keys[pygame.K_z] or keys[pygame.K_w]: dy = -1
+        if keys[pygame.K_s]: dy = 1
+        if keys[pygame.K_q] or keys[pygame.K_a]: dx = -1
+        if keys[pygame.K_d]: dx = 1
+        if dx or dy:
+            self.state.joueur.deplacer(dx, dy, self.state.murs)
 
-    def incrementer_temps(self):
-        self.temps += 1
+    def gerer_ramassage_objet(self):
+        """Ramasse un objet au sol (touche E)"""
+        j = self.state.joueur
+        total = sum(i['quantite'] for i in j.inventaire)
+        if total >= INVENTAIRE_MAX:
+            self.state.ajouter_message("Inventaire plein ! (max 4)", 120)
+            return False
+        for obj in self.state.objets:
+            if not obj.ramasse and obj.collision_joueur(j):
+                if j.ramasser_objet(obj.type):
+                    obj.ramasse = True
+                    self.state.ajouter_message(f"Ramassé : {obj.type}")
+                    self._verifier_quetes(obj.type)
+                    return True
+                else:
+                    self.state.ajouter_message("Inventaire plein !", 120)
+        return False
 
-    def obtenir_heure_actuelle(self):
-        return (self.temps // 3600) % 24, (self.temps // 60) % 60
+    def gerer_ouverture_boite(self):
+        """Ouvre une boîte mystère (touche E)"""
+        j = self.state.joueur
+        for boite in self.state.boites:
+            if not boite.ouverte and boite.collision_joueur(j):
+                boite.ouvrir(j, self.state.ajouter_message)
+                return True
+        return False
 
-    def mettre_a_jour_messages(self):
-        self.messages = [(t, d-1) for t, d in self.messages if d > 1]
+    def _verifier_quetes(self, type_objet):
+        if type_objet == "Clé" and not self.state.quetes[0].complete:
+            self.state.quetes[0].complete = True
+            self.state.ajouter_message("QUÊTE COMPLÉTÉE : Trouver la sortie !")
+            self.state.quete_actuelle = 1
+        elif type_objet == "Fusible" and not self.state.quetes[1].complete:
+            self.state.quetes[1].complete = True
+            self.state.ajouter_message("QUÊTE COMPLÉTÉE : Électricité rétablie !")
+            self.state.ajouter_message("⚠️ Les monstres se réveillent...")
+            self.state.activer_monstres()
+            self.state.quete_actuelle = 2
 
-    def activer_monstres(self):
-        self.monstres_actives = True
-        for m in self.monstres:
-            m.actif = True
+    def mettre_a_jour_monstres(self):
+        if not self.state.monstres_actives:
+            return
+        j = self.state.joueur
+        for m in self.state.monstres:
+            # Mise à jour de l'agressivité selon le temps
+            m.mettre_a_jour_agressivite(self.state.temps)
+            m.deplacer(j.x, j.y, self.state.murs)
+            if m.collision_joueur(j):
+                j.sante    -= m.degats
+                j.paranoia = min(100, j.paranoia + m.degats * 0.5)
+
+    def mettre_a_jour_paranoia(self):
+        j = self.state.joueur
+        j.paranoia += JOUEUR_PARANOIA_AUGMENTATION
+        if j.a_objet("Talisman"):
+            j.paranoia = max(0, j.paranoia - 0.02)
+
+    def verifier_conditions_fin(self):
+        j = self.state.joueur
+        if j.sante <= 0:
+            return "game_over", "Vous êtes mort..."
+        if j.paranoia >= 100:
+            return "game_over", "La folie vous a consumé..."
+        h, _ = self.state.obtenir_heure_actuelle()
+        if HEURE_VICTOIRE_MIN <= h < HEURE_VICTOIRE_MAX and self.state.quetes[1].complete:
+            return "victoire", None
+        return None, None
