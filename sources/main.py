@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'a l'aube
-# Auteurs : [Prenoms Noms]
 """Point d'entree principal du jeu"""
 
 import pygame
