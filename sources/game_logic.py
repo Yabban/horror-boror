@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'à l'aube
-# Auteurs : [Prénoms Noms]
 """Logique du jeu : déplacements, quêtes, monstres, paranoïa, tâches"""
 
 import pygame
