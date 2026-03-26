@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'à l'aube
-# Auteurs : [Prénoms Noms]
 """Génération procédurale du monde — urbex avec décoration d'ambiance"""
 
 import pygame
