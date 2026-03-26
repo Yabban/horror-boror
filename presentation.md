@@ -40,7 +40,7 @@ Le joueur doit survivre jusqu'à l'aube (6h00 in-game) dans un bâtiment obscur,
 Ce projet a utilisé une IA générative (Claude) pour :
 - Refactorisation de l'architecture en modules
 - Aide à la conception du système de sprites
-- Génération et débogage de la logique des boîtes mystères
+- 
 
 Toutes les décisions de conception et l'intégration finale ont été réalisées par l'équipe.
 
