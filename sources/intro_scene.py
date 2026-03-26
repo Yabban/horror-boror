@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'à l'aube
-# Auteurs : [Prénoms Noms]
 """Scene d'introduction : exterieur avec voiture et dialogue"""
 
 import pygame
