@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'à l'aube
-# Auteurs : [Prénoms Noms]
 """État global du jeu"""
 
 import json, os
