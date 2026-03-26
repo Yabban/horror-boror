@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'a l'aube
-# Auteurs : [Prenoms Noms]
 """Entites du jeu : Joueur, Monstre, Objet, Boite, Brique, Quete"""
 
 import pygame
