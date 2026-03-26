@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'a l'aube
-# Auteurs : [Prenoms Noms]
 """Configuration du jeu — constantes et parametres"""
 
 import os
