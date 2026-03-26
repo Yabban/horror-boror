@@ -1,5 +1,3 @@
-# Projet : Survie jusqu'a l'aube
-# Auteurs : [Prenoms Noms]
 """Interface utilisateur : HUD, inventaire, menus, animations de mort"""
 
 import pygame
